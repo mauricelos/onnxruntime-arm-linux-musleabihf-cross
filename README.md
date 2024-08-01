@@ -12,7 +12,7 @@ This repository contains the necessary files and instructions to build ONNX Runt
 ### Clone the Repository
 
 ```sh
-git clone https://github.com/mauricelos/onnxruntime-arm-linux-musleabihf-cross.git
+git clone --recurse-submodules https://github.com/mauricelos/onnxruntime-arm-linux-musleabihf-cross.git
 cd onnxruntime-arm-linux-musleabihf-cross
 ```
 
