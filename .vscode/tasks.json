@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build_onnxruntime_test_arm_toolchain",
+            "type": "shell",
+            "command": "python3 bazelisk/bazelisk.py build //:onnxruntime_test --platforms=//toolchain_arm32_gcc_musl --compilation_mode=opt",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        },
+    ]
+}

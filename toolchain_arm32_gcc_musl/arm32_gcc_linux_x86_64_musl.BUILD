@@ -1,0 +1,83 @@
+load("@bazel_tools//tools/cpp:unix_cc_toolchain_config.bzl", "cc_toolchain_config")
+
+filegroup(
+    name = "all",
+    srcs = glob([
+        "bin/**/*",
+        "include/**/*",
+        "lib/**/*",
+        "libexec/**/*",
+        "share/**/*",
+        "arm-buildroot-linux-musleabihf/sysroot/**/*",
+        "arm-buildroot-linux-musleabihf/include/c++/12.3.0/**/*",
+    ]) + [
+        "arm-buildroot-linux-musleabihf/bin/ar",
+        "arm-buildroot-linux-musleabihf/bin/as",
+    ],
+)
+
+cc_toolchain(
+    name = "cc_toolchain",
+    all_files = ":all",
+    ar_files = ":all",
+    as_files = ":all",
+    compiler_files = ":all",
+    dwp_files = ":all",
+    linker_files = ":all",
+    objcopy_files = ":all",
+    static_runtime_lib = ":all",
+    strip_files = ":all",
+    toolchain_config = ":my_cc_toolchain_config",
+)
+
+cc_toolchain_config(
+    name = "my_cc_toolchain_config",
+    abi_libc_version = "unknown",
+    abi_version = "unknown",
+    archive_flags = ["--plugin=external/arm32_gcc_linux_x86_64_musl/libexec/gcc/arm-buildroot-linux-musleabihf/12.3.0/liblto_plugin.so"],
+    compile_flags = [
+        "-no-canonical-prefixes",
+        "-fno-canonical-system-headers",
+        "--sysroot=external/arm32_gcc_linux_x86_64_musl/arm-buildroot-linux-musleabihf/sysroot",
+        "-mfloat-abi=hard",
+        "-O3",
+        "-fuse-ld=gold",
+        "-flto",
+        "-fPIC",
+        "-ffast-math",
+        "-fvisibility=hidden",
+        "-fstack-protector-strong",
+        "-D_FORTIFY_SOURCE=2",
+        "-fwrapv",
+        "-fno-strict-overflow",
+        "-Wno-psabi",
+    ],
+    compiler = "gcc",
+    cpu = "armv7",
+    host_system_name = "k8",
+    link_flags = [
+        "-Wl,-O3",
+        "-Wl,-flto",
+        "-Wl,--gc-sections",
+        "-Wl,--as-needed",
+        "-Wl,--strip-all",
+        "-Wl,-z,relro,-z,now",
+    ],
+    target_libc = "unknown",
+    target_system_name = "armv7",
+    tool_paths = {
+        "gcc": "bin/arm-buildroot-linux-musleabihf-gcc.br_real",
+        "g++": "bin/arm-buildroot-linux-musleabihf-g++.br_real",
+        "cpp": "bin/arm-buildroot-linux-musleabihf-cpp.br_real",
+        "ar": "arm-buildroot-linux-musleabihf/bin/ar",
+        "nm": "bin/arm-buildroot-linux-musleabihf-gcc-nm",
+        "ld": "bin/arm-buildroot-linux-musleabihf-ld",
+        "as": "arm-buildroot-linux-musleabihf/bin/as",
+        "objcopy": "bin/arm-buildroot-linux-musleabihf-objcopy",
+        "objdump": "bin/arm-buildroot-linux-musleabihf-objdump",
+        "gcov": "bin/arm-buildroot-linux-musleabihf-gcov",
+        "strip": "bin/arm-buildroot-linux-musleabihf-strip",
+        "llvm-cov": "/bin/false",
+    },
+    toolchain_identifier = "arm32_gcc_musl",
+)

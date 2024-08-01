@@ -1,0 +1,11 @@
+--- cmake/onnxruntime_mlas_old.cmake	2024-02-05 19:57:24.711884000 +0100
++++ cmake/onnxruntime_mlas.cmake	2024-04-10 13:12:54.375847563 +0200
+@@ -655,7 +655,7 @@
+ endblock()
+ 
+ 
+-if (NOT onnxruntime_ORT_MINIMAL_BUILD)
++if (onnxruntime_ORT_MINIMAL_BUILD)
+ 
+   #
+   # Command line tool for quantization and de-quantization of 2-D fp32 tensors

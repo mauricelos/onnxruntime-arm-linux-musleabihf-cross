@@ -1,0 +1,20 @@
+--- onnxruntime/core/platform/posix/stacktrace_old.cc	2024-02-06 10:28:36.312631000 +0100
++++ onnxruntime/core/platform/posix/stacktrace.cc	2024-02-06 10:29:27.596593923 +0100
+@@ -3,7 +3,7 @@
+ 
+ #include "core/common/common.h"
+ 
+-#if !defined(__ANDROID__) && !defined(__wasm__) && !defined(_OPSCHEMA_LIB_) && !defined(_AIX)
++#if !defined(__ANDROID__) && !defined(__wasm__) && !defined(_OPSCHEMA_LIB_) && !defined(_AIX) && !defined(MUSL)
+ #include <execinfo.h>
+ #endif
+ #include <vector>
+@@ -13,7 +13,7 @@
+ std::vector<std::string> GetStackTrace() {
+   std::vector<std::string> stack;
+ 
+-#if !defined(NDEBUG) && !defined(__ANDROID__) && !defined(__wasm__) && !defined(_OPSCHEMA_LIB_)
++#if !defined(NDEBUG) && !defined(__ANDROID__) && !defined(__wasm__) && !defined(_OPSCHEMA_LIB_) && !defined(MUSL)
+   constexpr int kCallstackLimit = 64;  // Maximum depth of callstack
+ 
+   void* array[kCallstackLimit];

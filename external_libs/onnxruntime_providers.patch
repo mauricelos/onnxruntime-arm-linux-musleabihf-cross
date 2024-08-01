@@ -1,0 +1,30 @@
+--- cmake/onnxruntime_providers_cpu_old.cmake	2024-02-11 16:22:08.055309227 +0100
++++ cmake/onnxruntime_providers_cpu.cmake	2024-04-09 23:36:55.088414348 +0200
+@@ -165,7 +165,7 @@
+ #      target_compile_options(onnxruntime_providers PRIVATE "/wd4244")
+ #   endif()
+ endif()
+-onnxruntime_add_include_to_target(onnxruntime_providers onnxruntime_common onnxruntime_framework onnx onnx_proto ${PROTOBUF_LIB} flatbuffers::flatbuffers Boost::mp11 safeint_interface)
++onnxruntime_add_include_to_target(onnxruntime_providers onnxruntime_common onnxruntime_framework onnx onnx_proto re2::re2 ${PROTOBUF_LIB} flatbuffers::flatbuffers Boost::mp11 safeint_interface)
+ 
+ if (onnxruntime_BUILD_MS_EXPERIMENTAL_OPS)
+   target_compile_definitions(onnxruntime_providers PRIVATE BUILD_MS_EXPERIMENTAL_OPS=1)
+@@ -193,7 +193,7 @@
+ 
+ target_include_directories(onnxruntime_providers PRIVATE ${ONNXRUNTIME_ROOT} ${eigen_INCLUDE_DIRS})
+ onnxruntime_add_include_to_target(onnxruntime_providers re2::re2)
+-add_dependencies(onnxruntime_providers onnx ${onnxruntime_EXTERNAL_DEPENDENCIES})
++add_dependencies(onnxruntime_providers onnx re2 ${onnxruntime_EXTERNAL_DEPENDENCIES})
+ 
+ if (onnxruntime_ENABLE_TRAINING_OPS)
+   target_include_directories(onnxruntime_providers PRIVATE ${ORTTRAINING_ROOT})
+@@ -225,7 +225,8 @@
+ if (NOT onnxruntime_MINIMAL_BUILD AND NOT onnxruntime_EXTENDED_MINIMAL_BUILD
+                                   AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin|iOS"
+                                   AND NOT CMAKE_SYSTEM_NAME STREQUAL "Android"
+-                                  AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
++                                  AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten"
++                                  AND NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+   file(GLOB onnxruntime_providers_shared_cc_srcs CONFIGURE_DEPENDS
+   "${ONNXRUNTIME_ROOT}/core/providers/shared/*.h"
+   "${ONNXRUNTIME_ROOT}/core/providers/shared/*.cc"

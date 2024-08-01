@@ -1,0 +1,11 @@
+--- cmake/onnxruntime_common_old.cmake	2024-02-05 19:57:24.711884000 +0100
++++ cmake/onnxruntime_common.cmake	2024-04-10 00:32:19.356743061 +0200
+@@ -129,7 +129,7 @@
+         ${OPTIONAL_LITE_INCLUDE_DIR})
+ 
+ 
+-target_link_libraries(onnxruntime_common PUBLIC safeint_interface ${GSL_TARGET} ${ABSEIL_LIBS})
++target_link_libraries(onnxruntime_common PUBLIC safeint_interface nsync::nsync_cpp ${GSL_TARGET} ${ABSEIL_LIBS})
+ 
+ add_dependencies(onnxruntime_common ${onnxruntime_EXTERNAL_DEPENDENCIES})
+ 

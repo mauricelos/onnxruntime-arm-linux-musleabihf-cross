@@ -1,0 +1,38 @@
+--- onnxruntime/core/common/logging/logging_old.cc	2024-02-06 10:28:36.312631000 +0100
++++ onnxruntime/core/common/logging/logging.cc	2024-02-06 10:29:27.596593923 +0100
+@@ -16,7 +16,7 @@
+ #include "core/common/logging/sinks/composite_sink.h"
+ #else
+ #include <unistd.h>
+-#if defined(__MACH__) || defined(__wasm__) || defined(_AIX)
++#if defined(__MACH__) || defined(__wasm__) || defined(_AIX) || defined(MUSL)
+ #include <pthread.h>
+ #else
+ #include <sys/syscall.h>
+@@ -110,7 +110,7 @@
+ 
+     // If the following assertion passes, using the atomic to validate calls to Log should
+     // be reasonably economical.
+-    static_assert(std::remove_reference_t<decltype(DefaultLoggerManagerInstance())>::is_always_lock_free);
++    //static_assert(std::remove_reference_t<decltype(DefaultLoggerManagerInstance())>::is_always_lock_free);
+     DefaultLoggerManagerInstance().store(this);
+ 
+     CreateDefaultLogger(*default_logger_id);
+@@ -225,7 +225,7 @@
+   long tid;
+   thr_self(&tid);
+   return static_cast<unsigned int>(tid);
+-#elif defined(__wasm__) || defined(_AIX)
++#elif defined(__wasm__) || defined(_AIX) || defined(MUSL)
+   return static_cast<unsigned int>(pthread_self());
+ #else
+   return static_cast<unsigned int>(syscall(SYS_gettid));
+@@ -238,7 +238,7 @@
+ unsigned int GetProcessId() {
+ #ifdef _WIN32
+   return static_cast<unsigned int>(GetCurrentProcessId());
+-#elif defined(__MACH__) || defined(__wasm__) || defined(_AIX)
++#elif defined(__MACH__) || defined(__wasm__) || defined(_AIX) || defined(MUSL)
+   return static_cast<unsigned int>(getpid());
+ #else
+   return static_cast<unsigned int>(syscall(SYS_getpid));

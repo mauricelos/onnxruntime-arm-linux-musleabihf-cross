@@ -1,0 +1,44 @@
+--- bin/aclocal_old	2024-03-03 10:03:07.000000000 +0100
++++ bin/aclocal	2024-04-09 12:59:00.690535523 +0200
+@@ -19,13 +19,17 @@
+ # Written by Tom Tromey <tromey@redhat.com>, and
+ # Alexandre Duret-Lutz <adl@gnu.org>.
+ 
++use Cwd 'abs_path';
++my $script_path = abs_path($0);
++$script_path =~ s|/[^/]+$||;
++
+ use 5.006;
+ use strict;
+ use warnings FATAL => 'all';
+ 
+ BEGIN
+ {
+-  unshift (@INC, '/builds/buildroot.org/toolchains-builder/build/armv7-eabihf--musl--stable-2024.02-1/share/automake-1.16')
++  unshift (@INC, '../share/automake-1.16')
+     unless $ENV{AUTOMAKE_UNINSTALLED};
+ }
+ 
+@@ -65,8 +69,11 @@
+ # ACLOCAL_PATH environment variable, and reset with the '--system-acdir'
+ # option.
+ my @user_includes = ();
+-my @automake_includes = ('/builds/buildroot.org/toolchains-builder/build/armv7-eabihf--musl--stable-2024.02-1/share/aclocal-' . $APIVERSION);
+-my @system_includes = ('/builds/buildroot.org/toolchains-builder/build/armv7-eabihf--musl--stable-2024.02-1/share/aclocal');
++my @automake_includes = ('../share/aclocal-1.16');
++@automake_includes = map { $script_path . '/' . $_ } @automake_includes;
++my @system_includes = ('../share/aclocal');
++
++print $script_path;
+ 
+ # Whether we should copy M4 file in $user_includes[0].
+ my $install = 0;
+@@ -778,7 +785,7 @@
+   # early.
+   # FIXME: To be removed in Automake 2.0, once we can assume autoconf
+   #        2.70 or later.
+-  $traces .= "$automake_includes[0]/internal/ac-config-macro-dirs.m4 ";
++  #$traces .= "$automake_includes[0]/internal/ac-config-macro-dirs.m4 ";
+ 
+   # All candidate files.
+   $traces .= join (' ',

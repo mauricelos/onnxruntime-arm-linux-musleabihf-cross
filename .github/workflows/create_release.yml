@@ -1,0 +1,81 @@
+name: CI/CD onnxruntime arm release
+
+on:
+  push:
+    tags:
+      - '*'
+
+  workflow_dispatch:
+
+jobs:
+  create_release:
+    name: Create release
+    runs-on: ubuntu-latest
+    permissions: write-all
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Get tag
+        id: vars
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+      - name: Create release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.vars.outputs.tag }}
+          name: onnxruntime arm-musleabihf ${{ steps.vars.outputs.tag }}
+          draft: false
+          prerelease: false
+
+  release_assets:
+    name: Release assets
+    needs: create_release
+    runs-on: ubuntu-22.04
+    permissions: write-all
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Cache bazel
+        uses: actions/cache@v4
+        env:
+          cache-name: bazel-cache
+        with:
+          path: |
+            ~/.cache/bazelisk
+            ~/.cache/bazel
+          key: ${{ runner.os }}-${{ env.cache-name }}
+      - name: Build binary ubuntu only
+        run: python3 bazelisk/bazelisk.py build //:onnxruntime_test --platforms=//toolchain_arm32_gcc_musl --incompatible_enable_cc_toolchain_resolution --compilation_mode=opt
+      - name: Create release archive
+        run: |
+          mkdir -p onnxruntime_arm_musleabihf/include
+          mkdir -p onnxruntime_arm_musleabihf/lib
+          cp -r ./bazel-out/k8-opt/bin/external/onnxruntime/onnxruntime/include/* onnxruntime_arm_musleabihf/include/
+          cp -r ./bazel-out/k8-opt/bin/external/onnxruntime/onnxruntime/lib/* onnxruntime_arm_musleabihf/lib/
+          tar -czvf onnxruntime_arm_musleabihf.tar.gz onnxruntime_arm_musleabihf
+      - name: Upload release binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_name: onnxruntime_arm_musleabihf_test
+          asset_path: ./bazel-out/k8-opt/bin/onnxruntime_test
+          asset_content_type: application/octet-stream
+      - name: Upload release archive
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_name: onnxruntime_arm_musleabihf.tar.gz
+          asset_path: ./onnxruntime_arm_musleabihf.tar.gz
+          asset_content_type: application/gzip
