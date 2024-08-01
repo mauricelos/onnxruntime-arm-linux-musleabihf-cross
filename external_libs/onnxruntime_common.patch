@@ -4,8 +4,8 @@
          ${OPTIONAL_LITE_INCLUDE_DIR})
  
  
--target_link_libraries(onnxruntime_common PUBLIC safeint_interface ${GSL_TARGET} ${ABSEIL_LIBS})
-+target_link_libraries(onnxruntime_common PUBLIC safeint_interface nsync::nsync_cpp ${GSL_TARGET} ${ABSEIL_LIBS})
+-target_link_libraries(onnxruntime_common PUBLIC safeint_interface ${GSL_TARGET} ${ABSEIL_LIBS} date::date)
++target_link_libraries(onnxruntime_common PUBLIC safeint_interface nsync::nsync_cpp ${GSL_TARGET} ${ABSEIL_LIBS} date::date)
  
  add_dependencies(onnxruntime_common ${onnxruntime_EXTERNAL_DEPENDENCIES})
  

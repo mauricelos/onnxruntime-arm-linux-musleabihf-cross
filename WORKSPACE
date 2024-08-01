@@ -33,7 +33,7 @@ git_repository(
     ],
     recursive_init_submodules = True,
     remote = "https://github.com/microsoft/onnxruntime.git",
-    tag = "v1.17.3",
+    tag = "v1.18.1",
 )
 
 git_repository(
