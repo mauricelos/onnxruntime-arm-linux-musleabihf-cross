@@ -6,12 +6,6 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 http_archive(
     name = "arm32_gcc_linux_x86_64_musl",
     build_file = "//toolchain_arm32_gcc_musl:arm32_gcc_linux_x86_64_musl.BUILD",
-    patches = [
-        "//toolchain_arm32_gcc_musl:libtoolize.patch",
-        "//toolchain_arm32_gcc_musl:aclocal.patch",
-        "//toolchain_arm32_gcc_musl:aclocal_m4.patch",
-        "//toolchain_arm32_gcc_musl:autom4te.patch",
-    ],
     strip_prefix = "armv7-eabihf--musl--stable-2024.02-1",
     urls = ["https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/tarballs/armv7-eabihf--musl--stable-2024.02-1.tar.bz2"],
 )
@@ -44,4 +38,7 @@ git_repository(
 
 load("@rules_foreign_cc//foreign_cc:repositories.bzl", "rules_foreign_cc_dependencies")
 
-rules_foreign_cc_dependencies(cmake_version = "3.26.4")
+rules_foreign_cc_dependencies(
+    cmake_version = "3.26.4",
+    register_built_tools = False,
+)
